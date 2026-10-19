@@ -1,0 +1,282 @@
+/* Composite widgets: tabs, path input, speed input, key/value grids. */
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+/* ---------------------------------------------------------- tabs */
+.tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 40px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color var(--t-fast);
+}
+
+.tab svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tab:hover {
+  color: var(--text-1);
+}
+
+.tab.on {
+  color: var(--text-1);
+}
+
+.tab.on::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--accent);
+}
+
+.tab-badge {
+  min-width: 18px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 17px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabs-extra {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* ---------------------------------------------------------- path input */
+.path-input {
+  position: relative;
+  min-width: 0;
+}
+
+.path-input .input-wrap > input {
+  font-size: var(--fs);
+}
+
+.path-suggest {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Under the box itself, not under the free-space line. */
+  top: calc(var(--ctl-h) + 4px);
+  z-index: 50;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+  border-radius: var(--r);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-pop);
+  animation: pop-in 100ms var(--ease);
+}
+
+[data-theme="light"] .path-suggest {
+  background: var(--bg-1);
+}
+
+.path-suggest button {
+  display: block;
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.path-suggest button.active {
+  background: var(--accent-soft);
+}
+
+.path-free {
+  margin-top: 5px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.path-free.short {
+  color: var(--amber);
+}
+
+.path-suggest-head {
+  padding: 5px 8px 3px;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- speed / number inputs */
+.speed-input .unit-select {
+  height: 100%;
+  padding: 0 8px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+.speed-input .unit-select option {
+  background: var(--bg-2);
+}
+
+.number-input {
+  width: 100%;
+}
+
+.number-input > input {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------- switch rows */
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.switch-row .sw {
+  margin-left: auto;
+}
+
+/* ---------------------------------------------------------- key / value grid */
+.kv {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 7px 16px;
+  font-size: var(--fs);
+  align-items: baseline;
+}
+
+.kv > dt {
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.kv > dd {
+  margin: 0;
+  color: var(--text-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.kv > dd .faint {
+  margin-left: 4px;
+}
+
+.section-title {
+  margin-bottom: 10px;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- simple tables (details tabs etc.) */
+.grid-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs);
+  font-variant-numeric: tabular-nums;
+}
+
+.grid-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 32px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-1);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.grid-table th.r,
+.grid-table td.r {
+  text-align: right;
+}
+
+.grid-table th.sortable:hover {
+  color: var(--text-1);
+}
+
+.grid-table th .sort-ic {
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  vertical-align: -2px;
+  color: var(--accent-hi);
+}
+
+.grid-table td {
+  height: 32px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 1px;
+}
+
+.grid-table tr:hover td {
+  background: var(--hover);
+}
+
+.grid-table tr.sel td {
+  background: var(--accent-soft);
+}
+
+.grid-table td.wrap {
+  white-space: normal;
+}

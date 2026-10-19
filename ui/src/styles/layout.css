@@ -1,0 +1,774 @@
+/* App shell: sidebar, main card, toolbar, status bar. */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w, 232px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100vh;
+}
+
+body.dragging,
+body.dragging * {
+  user-select: none !important;
+}
+
+body.dragging iframe {
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- sidebar */
+.sidebar {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 8px 0 10px;
+}
+
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
+  box-shadow: 0 2px 8px -2px rgba(139, 92, 246, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.brand-logo svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+/* In the sidebar the brand is a button: it opens the app menu (About, Quit, ...). */
+.brand-row {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  flex-shrink: 0;
+}
+
+.brand-row > .brand {
+  height: 38px;
+  padding: 0 8px 0 6px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-1);
+  transition: background var(--t-fast);
+}
+
+.brand-row > .brand:hover,
+.brand-row > .brand.open {
+  background: var(--hover);
+}
+
+.brand-caret {
+  width: 14px;
+  height: 14px;
+  margin-left: -4px;
+  color: var(--text-3);
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.brand.open .brand-caret {
+  transform: rotate(180deg);
+}
+
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 -4px;
+  padding: 0 4px 12px;
+}
+
+/* The scrollbar only shows while the pointer is over the sidebar. */
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb,
+.sidebar-scroll:focus-within::-webkit-scrollbar-thumb {
+  background-color: var(--line-2);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .sidebar-scroll {
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color var(--t-fast);
+  }
+
+  .sidebar-scroll:hover,
+  .sidebar-scroll:focus-within {
+    scrollbar-color: var(--line-3) transparent;
+  }
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs);
+  font-weight: 500;
+  text-align: left;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast);
+}
+
+.nav-item > svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: color var(--t-fast);
+}
+
+.nav-item > .nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.nav-item > .nav-count {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-item:hover {
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.nav-item.on {
+  background: var(--press);
+  color: var(--text-1);
+}
+
+.nav-item.on > svg {
+  color: var(--accent-hi);
+}
+
+.nav-item.on > .nav-count {
+  color: var(--text-2);
+}
+
+.nav-item.sm {
+  height: 28px;
+  font-weight: 450;
+}
+
+.nav-item.sm > svg {
+  width: 15px;
+  height: 15px;
+}
+
+.nav-item.drop-hover {
+  background: var(--accent-soft-2);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.nav-item .nav-unread {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  line-height: 18px;
+  text-align: center;
+}
+
+.nav-item .nav-unread.warning {
+  background: var(--amber);
+  color: #1f1400;
+}
+
+.nav-item .nav-unread.error {
+  background: var(--red);
+  color: #fff;
+}
+
+.side-section {
+  margin-top: 14px;
+}
+
+.side-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 4px 0 9px;
+  color: var(--text-3);
+}
+
+.side-head > button.side-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.side-head > button.side-title:hover {
+  color: var(--text-2);
+}
+
+.side-head > button.side-title svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--t) var(--ease);
+  opacity: 0;
+}
+
+.side-head:hover > button.side-title svg {
+  opacity: 1;
+}
+
+.side-section.collapsed .side-head > button.side-title svg {
+  transform: rotate(-90deg);
+  opacity: 1;
+}
+
+.side-head .icon-btn {
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.side-head:hover .icon-btn,
+.side-head .icon-btn:focus-visible {
+  opacity: 1;
+}
+
+/* Touch screens have no hover to reveal them. */
+@media (hover: none) {
+  .side-head .icon-btn,
+  .side-head > button.side-title svg {
+    opacity: 1;
+  }
+}
+
+.side-more {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  background: transparent;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.side-more:hover {
+  color: var(--text-1);
+}
+
+.side-more svg {
+  width: 13px;
+  height: 13px;
+}
+
+.side-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 0 10px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+/* state-coloured filter icons */
+.ic-dl {
+  color: var(--accent-hi) !important;
+}
+
+.ic-seed,
+.ic-done {
+  color: var(--green) !important;
+}
+
+.ic-stopped {
+  color: var(--gray) !important;
+}
+
+.ic-active {
+  color: var(--amber) !important;
+}
+
+.ic-error {
+  color: var(--red) !important;
+}
+
+.ic-check {
+  color: var(--amber) !important;
+}
+
+.ic-moving {
+  color: var(--purple) !important;
+}
+
+/* ---------------------------------------------------------- main card */
+.main {
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 8px 8px 0 0;
+  border-radius: 12px;
+  background: var(--bg-1);
+  box-shadow: 0 0 0 1px var(--line), 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------- toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 54px;
+  padding: 0 12px 0 18px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-right: 8px;
+}
+
+.toolbar-title h1 {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.toolbar-title .badge {
+  font-size: var(--fs-xs);
+}
+
+.toolbar .search-input {
+  width: 230px;
+  height: 30px;
+  transition: width var(--t) var(--ease);
+}
+
+.toolbar .search-input:focus-within {
+  width: 280px;
+}
+
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.filter-chips .chip {
+  background: var(--accent-soft);
+  color: var(--accent-hi);
+}
+
+/* ---------------------------------------------------------- status bar */
+.statusbar {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: inherit;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+button.sb-item:hover {
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.sb-item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.sb-item.on {
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  color: var(--amber);
+}
+
+.sb-speed {
+  min-width: 96px;
+  justify-content: flex-start;
+}
+
+.sb-speed .sb-limit {
+  color: var(--text-3);
+}
+
+.sb-dl svg {
+  color: var(--accent-hi);
+}
+
+.sb-ul svg {
+  color: var(--green);
+}
+
+.sb-sep {
+  width: 1px;
+  height: 14px;
+  margin: 0 4px;
+  background: var(--line-2);
+}
+
+.conn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gray);
+}
+
+.conn-dot.connected {
+  background: var(--green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 20%, transparent);
+}
+
+.conn-dot.firewalled {
+  background: var(--amber);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 20%, transparent);
+}
+
+.conn-dot.disconnected {
+  background: var(--red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 20%, transparent);
+}
+
+.offline-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--red) 25%, transparent);
+  background: color-mix(in srgb, var(--red) 10%, transparent);
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+}
+
+.offline-banner svg {
+  width: 15px;
+  height: 15px;
+  color: var(--red);
+}
+
+/* ---------------------------------------------------------- boot & login */
+.boot {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  color: var(--text-3);
+}
+
+.boot-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fade-in 300ms 150ms both;
+}
+
+.boot .brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+}
+
+.boot .brand-logo svg {
+  width: 24px;
+  height: 24px;
+}
+
+.login {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(800px 400px at 50% -10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent),
+    var(--bg-0);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+  padding: 28px;
+  border-radius: 18px;
+  background: var(--bg-1);
+  box-shadow: var(--shadow-dialog);
+  animation: pop-in 220ms var(--ease);
+}
+
+.login-card .brand {
+  height: auto;
+  padding: 0;
+  margin-bottom: 4px;
+}
+
+.login-card h1 {
+  font-size: var(--fs-xl);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.login-card p {
+  color: var(--text-2);
+}
+
+.login-card .btn {
+  width: 100%;
+  height: 36px;
+}
+
+/* ---------------------------------------------------------- toolbar extras */
+.toolbar-sel {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 2px 0 6px;
+  padding: 0 6px;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+.toolbar-add {
+  margin-left: 4px;
+  padding-right: 9px;
+}
+
+.btn .btn-caret {
+  width: 14px;
+  height: 14px;
+  margin-left: -2px;
+  opacity: 0.75;
+}
+
+.nav-toggle {
+  display: none !important;
+}
+
+.nav-scrim {
+  display: none;
+}
+
+/* ---------------------------------------------------------- transfers split */
+.transfers {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.split-h {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+  height: 1px;
+  background: var(--line);
+  transition: background var(--t-fast);
+}
+
+.split-h::before {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+  cursor: row-resize;
+}
+
+.split-h:hover {
+  background: var(--accent-line);
+}
+
+/* ---------------------------------------------------------- narrow windows */
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 900;
+    width: min(300px, 86vw);
+    background: var(--bg-0);
+    box-shadow: var(--shadow-dialog);
+    transform: translateX(-104%);
+    transition: transform var(--t) var(--ease);
+  }
+
+  .app.nav-open .sidebar {
+    transform: none;
+  }
+
+  .sidebar-resizer {
+    display: none;
+  }
+
+  .nav-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 899;
+    background: var(--scrim);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t);
+  }
+
+  .app.nav-open .nav-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .main {
+    grid-column: 1;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .nav-toggle {
+    display: inline-grid !important;
+  }
+
+  .toolbar {
+    gap: 2px;
+    padding: 0 8px;
+  }
+
+  .toolbar .search-input,
+  .toolbar .search-input:focus-within {
+    width: 150px;
+  }
+
+  .toolbar .search-input .suffix {
+    display: none;
+  }
+
+  .filter-chips,
+  .toolbar-sel,
+  .sb-hide-narrow {
+    display: none;
+  }
+
+  .toolbar-group {
+    margin: 0;
+    padding: 0 2px;
+    border: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .toolbar-title .badge,
+  .toolbar .search-input {
+    display: none;
+  }
+
+  .statusbar .sb-item:not(.sb-speed):not(:first-child) {
+    display: none;
+  }
+}

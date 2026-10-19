@@ -1,0 +1,474 @@
+/* Search: the search box, the results bar and list, past searches, the plugin dialogs. */
+
+.searchview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------- search box */
+.sv-toolbar {
+  gap: 8px;
+}
+
+.sv-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  max-width: 980px;
+}
+
+.sv-query {
+  flex: 1;
+  min-width: 160px;
+  height: 34px;
+}
+
+.sv-query > input {
+  font-size: var(--fs-md);
+}
+
+.sv-cat {
+  flex: none;
+  width: 150px;
+}
+
+.sv-src {
+  flex: none;
+  width: 184px;
+}
+
+.sv-form .select,
+.sv-go {
+  height: 34px;
+}
+
+.sv-go {
+  flex: none;
+  padding: 0 14px;
+}
+
+.sv-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.sv-center {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  color: var(--text-3);
+}
+
+/* ---------------------------------------------------------- results bar */
+.sv-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 10px 0 16px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.sv-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+.sv-status > svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.sv-status > svg.text-err {
+  color: var(--red);
+}
+
+.sv-status-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-failed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  color: var(--amber);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--t-fast);
+}
+
+.sv-failed:hover {
+  background: color-mix(in srgb, var(--amber) 24%, transparent);
+}
+
+.sv-failed svg {
+  width: 12px;
+  height: 12px;
+}
+
+.sv-bar .search-input {
+  width: 200px;
+  height: 28px;
+  flex-shrink: 0;
+  transition: width var(--t) var(--ease);
+}
+
+.sv-bar .search-input:focus-within {
+  width: 250px;
+}
+
+/* ---------------------------------------------------------- results */
+.sv-table .th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sv-seeds {
+  color: var(--green);
+  font-weight: 550;
+}
+
+.sv-site {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.sv-site > img,
+.sv-site > svg {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.sv-site > svg {
+  color: var(--text-3);
+}
+
+.sv-site > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sv-added {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  padding: 0 7px 0 5px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--green) 14%, transparent);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sv-added svg {
+  width: 11px;
+  height: 11px;
+}
+
+.tr.sv-in .name-text {
+  color: var(--text-2);
+}
+
+/* ---------------------------------------------------------- past searches (sidebar) */
+.sv-hist {
+  position: relative;
+}
+
+.sv-hist-x {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  margin-top: -10px;
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.sv-hist:hover .sv-hist-x,
+.sv-hist-x:focus-visible {
+  opacity: 1;
+}
+
+.sv-hist:hover .nav-count,
+.sv-hist:focus-within .nav-count {
+  visibility: hidden;
+}
+
+.side-note {
+  padding: 2px 9px 6px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+/* Touch screens have no hover: the close button stays. */
+@media (hover: none) {
+  .sv-hist-x {
+    opacity: 1;
+  }
+
+  .sv-hist .nav-count {
+    visibility: hidden;
+  }
+}
+
+/* ---------------------------------------------------------- plugin dialogs */
+.plugin-body {
+  gap: 12px;
+}
+
+.plugin-wait {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  color: var(--text-3);
+}
+
+.plugin-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.plugin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 8px 8px 12px;
+}
+
+.plugin-row + .plugin-row {
+  border-top: 1px solid var(--line);
+}
+
+.plugin-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  flex-shrink: 0;
+}
+
+.plugin-icon img {
+  width: 16px;
+  height: 16px;
+}
+
+.plugin-icon svg {
+  width: 15px;
+  height: 15px;
+  color: var(--text-3);
+}
+
+.plugin-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.plugin-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text-1);
+  font-weight: 550;
+}
+
+.plugin-ver {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.plugin-name .badge {
+  flex-shrink: 0;
+}
+
+.plugin-sub {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.plugin-sub.text-err {
+  color: var(--red);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.plugin-row.off .plugin-icon,
+.plugin-row.off .plugin-name > .ellipsis {
+  opacity: 0.55;
+}
+
+.plugin-list.official .plugin-row {
+  min-height: 42px;
+  padding: 6px 12px;
+}
+
+.plugin-list.official .plugin-row.off {
+  color: var(--text-3);
+}
+
+.plugin-note {
+  margin: 0;
+}
+
+.sv-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.sv-errors li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 12px;
+  background: var(--bg-2);
+}
+
+.sv-errors-site {
+  color: var(--text-1);
+  font-weight: 550;
+}
+
+.sv-errors-msg {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------- narrow windows */
+@media (max-width: 760px) {
+  .sv-toolbar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    height: auto;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .sv-form {
+    flex: 1 1 0;
+    flex-wrap: wrap;
+  }
+
+  .sv-query {
+    flex: 1 1 100%;
+  }
+
+  .sv-query kbd {
+    display: none;
+  }
+
+  .sv-cat,
+  .sv-src {
+    flex: 1 1 0;
+    width: auto;
+  }
+
+  .sv-bar {
+    padding: 0 8px 0 12px;
+  }
+
+  .sv-bar .search-input,
+  .sv-bar .search-input:focus-within {
+    width: 150px;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Two rows: what's happening, then the controls. */
+  .sv-bar {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding: 6px 8px 6px 12px;
+  }
+
+  .sv-status {
+    flex: 1 1 100%;
+    min-height: 28px;
+  }
+
+  .sv-bar > .spacer {
+    display: none;
+  }
+
+  /* An icon is enough; the selects need the room. */
+  .sv-go {
+    width: 34px;
+    padding: 0;
+  }
+
+  .sv-go-label {
+    display: none;
+  }
+
+  .sv-bar .search-input,
+  .sv-bar .search-input:focus-within {
+    flex: 1;
+    width: auto;
+  }
+
+  .plugin-row {
+    gap: 10px;
+    padding-left: 10px;
+  }
+
+  .plugin-icon {
+    display: none;
+  }
+}

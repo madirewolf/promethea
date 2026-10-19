@@ -1,0 +1,22 @@
+import "./lib/renamed";
+import "@fontsource-variable/inter";
+import "./styles/tokens.css";
+import "./styles/base.css";
+import "./styles/controls.css";
+import "./styles/overlays.css";
+import "./styles/widgets.css";
+import "./styles/layout.css";
+import "./styles/table.css";
+import "./styles/details.css";
+import "./styles/filetree.css";
+import "./styles/dialogs.css";
+import "./styles/settings.css";
+import "./styles/log.css";
+import "./styles/search.css";
+import "./styles/rss.css";
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import { applyCachedLook } from "./lib/look";
+
+applyCachedLook();
+createRoot(document.getElementById("root")!).render(<App />);

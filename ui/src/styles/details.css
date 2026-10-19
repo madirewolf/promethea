@@ -1,0 +1,429 @@
+/* Details panel under the torrent list. */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: 0;
+  background: var(--bg-1);
+}
+
+.details-tabs {
+  padding-right: 6px;
+}
+
+.details-tabs .tabs-extra {
+  min-width: 0;
+  padding-left: 12px;
+}
+
+.details-name {
+  min-width: 0;
+  max-width: 320px;
+  margin: 0 4px 0 8px;
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.details-filter {
+  width: 220px;
+  height: var(--ctl-h-sm);
+}
+
+.details-filter > input {
+  font-size: var(--fs-sm);
+}
+
+.details-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.details-loading {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  color: var(--text-3);
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+/* The tab strip gets crowded on narrow windows: drop labels before anything else. */
+@media (max-width: 900px) {
+  .details-tabs .tab > span:not(.tab-badge) {
+    display: none;
+  }
+
+  .details-name {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------- general */
+.general-tab {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.general-tab > .callout {
+  margin: 12px 16px 0;
+}
+
+.general-progress {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 64px;
+  grid-auto-rows: 18px;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gp-row {
+  display: contents;
+}
+
+.gp-label {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.gp-value {
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: right;
+}
+
+.gp-row.sub .gp-value {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* The bars span both rows and line up with them, one bar per row. */
+.gp-fill {
+  display: none;
+}
+
+.piece-bars {
+  display: grid;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  grid-template-rows: subgrid;
+  align-items: center;
+  min-width: 0;
+}
+
+.piece-bar {
+  position: relative;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--bg-3);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.piece-bar.avail {
+  height: 6px;
+}
+
+.piece-bar canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.piece-bar.empty {
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: auto;
+  background: none;
+  box-shadow: none;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.piece-bar.empty .spinner {
+  width: 14px;
+  height: 14px;
+}
+
+.general-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px 36px;
+  padding: 16px 16px 20px;
+}
+
+.general-grid .kv {
+  gap: 7px 14px;
+}
+
+.general-grid .kv > dt {
+  min-width: 112px;
+}
+
+.hash {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.hash > .mono {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hash .icon-btn {
+  opacity: 0.6;
+}
+
+.hash:hover .icon-btn {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------- tables */
+.dt-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  outline: none;
+  overscroll-behavior: contain;
+  /* Keyboard navigation scrolls rows into view below the sticky header. */
+  scroll-padding-top: 32px;
+}
+
+.dt-scroll:focus-visible {
+  box-shadow: none;
+}
+
+.grid-table.fixed {
+  table-layout: fixed;
+}
+
+.grid-table tbody tr {
+  cursor: default;
+}
+
+.dt-scroll:focus-within .grid-table tr.foc td {
+  box-shadow: inset 0 1px 0 var(--accent-line), inset 0 -1px 0 var(--accent-line);
+}
+
+.dt-scroll:focus-within .grid-table tr.foc td:first-child {
+  box-shadow:
+    inset 1px 0 0 var(--accent-line),
+    inset 0 1px 0 var(--accent-line),
+    inset 0 -1px 0 var(--accent-line);
+}
+
+.dt-scroll:focus-within .grid-table tr.foc td:last-child {
+  box-shadow:
+    inset -1px 0 0 var(--accent-line),
+    inset 0 1px 0 var(--accent-line),
+    inset 0 -1px 0 var(--accent-line);
+}
+
+.grid-table th.sorted {
+  color: var(--text-1);
+}
+
+.grid-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.grid-table tr.pseudo td {
+  color: var(--text-2);
+}
+
+.grid-table tr.pseudo td:first-child {
+  font-style: italic;
+}
+
+.dt-empty {
+  position: absolute;
+  inset: 32px 0 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.dt-empty > * {
+  flex: 1;
+  pointer-events: auto;
+}
+
+.cell-flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cell-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-ic {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.mono-num {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  font-variant-numeric: tabular-nums;
+}
+
+.peer-conn {
+  flex-shrink: 0;
+  padding: 0 5px;
+  border-radius: var(--r-xs);
+  background: var(--bg-3);
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  line-height: 16px;
+}
+
+/* ---------------------------------------------------------- speed */
+.speed-tab {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 10px 16px 8px;
+  gap: 8px;
+}
+
+.speed-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 28px;
+}
+
+.speed-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 22px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sl-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.sl-item > i,
+.st-row > i {
+  align-self: center;
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.sl-item.ul > i,
+.st-row.ul > i {
+  background: var(--green);
+}
+
+.sl-item > b {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.segmented.segmented-sm {
+  padding: 1px;
+}
+
+.segmented.segmented-sm button {
+  height: 22px;
+  padding: 0 9px;
+  font-size: var(--fs-xs);
+}
+
+.speed-chart {
+  position: relative;
+  flex: 1;
+  min-height: 60px;
+}
+
+.speed-chart > canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.speed-empty {
+  position: absolute;
+  inset: 0 0 20px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  pointer-events: none;
+}
+
+.speed-tip {
+  position: absolute;
+  top: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.st-time {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.st-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.st-row > b {
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--text-1);
+  font-weight: 600;
+}

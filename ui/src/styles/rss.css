@@ -1,0 +1,1022 @@
+/* RSS: the article list, the reader, the feed tree in the sidebar, the download rules dialog. */
+
+.rssview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.rss-body {
+  display: grid;
+  grid-template-columns: clamp(280px, 38%, 520px) minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------- article list */
+.rss-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--line);
+}
+
+.rss-listbar {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.rss-listbar .search-input {
+  flex: 1;
+  height: 30px;
+}
+
+.rss-rows {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* The focused row carries the keyboard indicator, as in the transfer list. */
+.rss-rows:focus-visible {
+  box-shadow: none;
+}
+
+.rss-rows-body {
+  position: relative;
+}
+
+.rss-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--rss-row-h, 54px);
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+  cursor: default;
+}
+
+.rss-row:hover {
+  background: var(--hover);
+}
+
+.rss-row.sel {
+  background: var(--accent-soft);
+}
+
+.rss-row.sel:hover {
+  background: color-mix(in srgb, var(--accent) 19%, transparent);
+}
+
+.rss-rows:focus .rss-row.foc {
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.rss-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rss-row.unread .rss-dot {
+  background: var(--accent);
+}
+
+.rss-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rss-row-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1.35;
+}
+
+.rss-row.unread .rss-row-title,
+.rss-row.sel .rss-row-title {
+  color: var(--text-1);
+}
+
+.rss-row.unread .rss-row-title {
+  font-weight: 600;
+}
+
+.rss-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.rss-meta-part {
+  flex-shrink: 0;
+}
+
+.rss-meta-part.ellipsis {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.rss-meta-part + .rss-meta-part::before {
+  content: "·";
+  margin-right: 6px;
+}
+
+.rss-row-meta .sv-added {
+  height: 16px;
+}
+
+.rss-row-busy {
+  display: grid;
+  place-items: center;
+  width: var(--ctl-h-sm);
+  height: var(--ctl-h-sm);
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.rss-row-dl {
+  opacity: 0;
+  transition: opacity var(--t-fast);
+}
+
+.rss-row:hover .rss-row-dl,
+.rss-row.sel .rss-row-dl,
+.rss-row-dl:focus-visible {
+  opacity: 1;
+}
+
+.rss-rows-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* ---------------------------------------------------------- reader */
+.rss-reader {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.rss-reader-none {
+  display: grid;
+  place-items: center;
+}
+
+.rss-reader-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 28px 48px;
+}
+
+.rss-reader-scroll > * {
+  max-width: 780px;
+}
+
+.rss-reader-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rss-reader-head .rss-back {
+  display: none;
+}
+
+.rss-reader-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rss-reader-titles h2 {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.rss-reader-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  min-width: 0;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.rss-reader-meta > span {
+  max-width: 100%;
+}
+
+.rss-reader-feed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--accent-hi);
+  font-size: inherit;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.rss-reader-feed:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rss-reader-feed svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.rss-reader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.rss-reader-actions:empty {
+  display: none;
+}
+
+/* ---------------------------------------------------------- description */
+.rss-desc,
+.rss-desc-none {
+  margin-top: 20px;
+}
+
+.rss-desc {
+  color: var(--text-1);
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.rss-desc-none {
+  color: var(--text-3);
+}
+
+.rss-plain {
+  white-space: pre-wrap;
+}
+
+.rss-desc p,
+.rss-desc ul,
+.rss-desc ol,
+.rss-desc dl,
+.rss-desc pre,
+.rss-desc blockquote,
+.rss-desc table,
+.rss-desc figure,
+.rss-desc details {
+  margin: 0 0 0.9em;
+}
+
+.rss-desc h1,
+.rss-desc h2,
+.rss-desc h3,
+.rss-desc h4,
+.rss-desc h5,
+.rss-desc h6 {
+  margin: 1.3em 0 0.5em;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.rss-desc h1 {
+  font-size: 1.4em;
+}
+
+.rss-desc h2 {
+  font-size: 1.25em;
+}
+
+.rss-desc h3 {
+  font-size: 1.1em;
+}
+
+.rss-desc h4,
+.rss-desc h5,
+.rss-desc h6 {
+  font-size: 1em;
+}
+
+.rss-desc > :first-child {
+  margin-top: 0;
+}
+
+.rss-desc > :last-child {
+  margin-bottom: 0;
+}
+
+.rss-desc a {
+  color: var(--accent-hi);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-hi) 40%, transparent);
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.rss-desc a:hover {
+  text-decoration-color: currentColor;
+}
+
+.rss-desc img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--r-sm);
+  vertical-align: middle;
+}
+
+.rss-desc ul,
+.rss-desc ol {
+  padding-left: 1.5em;
+}
+
+.rss-desc li + li {
+  margin-top: 0.25em;
+}
+
+.rss-desc blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--line-3);
+  color: var(--text-2);
+}
+
+.rss-desc pre {
+  padding: 10px 12px;
+  border-radius: var(--r);
+  background: var(--bg-2);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.rss-desc code,
+.rss-desc samp {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+.rss-desc :not(pre) > code {
+  padding: 1px 5px;
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+}
+
+/* Wide tables scroll on their own instead of widening the page. */
+.rss-desc table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.rss-desc th,
+.rss-desc td {
+  padding: 5px 10px;
+  border: 1px solid var(--line-2);
+  text-align: left;
+  vertical-align: top;
+}
+
+.rss-desc th {
+  background: var(--bg-2);
+  font-weight: 600;
+}
+
+.rss-desc caption {
+  padding-bottom: 6px;
+  color: var(--text-2);
+  text-align: left;
+}
+
+.rss-desc hr {
+  height: 1px;
+  margin: 1.4em 0;
+  border: 0;
+  background: var(--line-2);
+}
+
+.rss-desc dt {
+  font-weight: 600;
+}
+
+.rss-desc dd {
+  margin: 0 0 0.5em 1.2em;
+}
+
+.rss-desc figure {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.rss-desc figcaption {
+  margin-top: 6px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+
+.rss-desc mark {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--amber) 30%, transparent);
+  color: inherit;
+}
+
+.rss-desc summary {
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------- feed tree (sidebar) */
+.rss-node {
+  gap: 8px;
+  padding-left: calc(9px + var(--depth, 0) * 14px);
+}
+
+.rss-twisty {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  margin-right: -3px;
+  border-radius: var(--r-xs);
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.rss-twisty:hover {
+  color: var(--text-1);
+}
+
+.rss-twisty svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.rss-twisty.open svg {
+  transform: rotate(90deg);
+}
+
+.rss-node.has-unread > .nav-label {
+  color: var(--text-1);
+}
+
+.rss-node.has-unread > .nav-count {
+  color: var(--accent-hi);
+  font-weight: 600;
+}
+
+.rss-nav .side-head.drop-hover {
+  border-radius: 7px;
+  background: var(--accent-soft-2);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+  color: var(--text-1);
+}
+
+/* ---------------------------------------------------------- download rules */
+.modal.rr-dialog {
+  max-width: 1180px;
+  height: min(780px, calc(100vh - 48px));
+}
+
+.rr-body {
+  flex: 1;
+  gap: 0;
+  padding: 4px 0 0;
+  overflow: hidden;
+}
+
+.rr-body > .empty {
+  flex: 1;
+}
+
+.rr-auto {
+  align-items: center;
+  margin: 0 20px 12px;
+  flex-shrink: 0;
+}
+
+.rr-wait {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 320px;
+  color: var(--text-3);
+}
+
+.rr-layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr) 300px;
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Wide dialogs show the editor and its matches side by side. */
+.rr-editor {
+  display: contents;
+}
+
+/* The list and the matches sit a shade back from the editor. */
+.rr-list,
+.rr-matches {
+  background: color-mix(in srgb, var(--bg-0) 35%, var(--bg-1));
+}
+
+/* ------------------------------ rule list */
+.rr-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--line);
+}
+
+.rr-list-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 8px 0 16px;
+  flex-shrink: 0;
+}
+
+.rr-list-title {
+  flex: 1;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rr-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  padding: 0 8px 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rr-items:focus-visible {
+  box-shadow: none;
+}
+
+.rr-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 7px 10px;
+  border-radius: var(--r);
+  color: var(--text-2);
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.rr-item:hover {
+  background: var(--hover);
+}
+
+.rr-item.sel {
+  background: var(--accent-soft);
+}
+
+.rr-items:focus-visible .rr-item.sel {
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.rr-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rr-item-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-1);
+  font-weight: 550;
+}
+
+.rr-item.off .rr-item-name {
+  color: var(--text-2);
+}
+
+.rr-item-sub {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
+.rr-unsaved {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-hi);
+  flex-shrink: 0;
+}
+
+/* ------------------------------ editor */
+.rr-fields {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px 22px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rr-fields > .callout {
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.rr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rr-section + .rr-section {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.rr-section > .check {
+  align-self: flex-start;
+}
+
+.rr-section-title {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rr-warn {
+  color: var(--amber);
+}
+
+.rr-note {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.rr-days .input-wrap {
+  width: 150px;
+}
+
+.rr-feeds {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 240px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--bg-input);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+}
+
+.rr-feeds > .check {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.rr-feeds > .rr-feeds-all {
+  align-self: stretch;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 550;
+}
+
+.rr-history {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rr-episodes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-sm);
+}
+
+/* ------------------------------ matching articles */
+.rr-matches {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--line);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rr-matches-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px 0 16px;
+  background: inherit;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.rr-matches-head .badge {
+  letter-spacing: 0;
+}
+
+.rr-matches-note {
+  padding: 2px 16px 10px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.rr-matches-note.text-err {
+  color: var(--red);
+  overflow-wrap: anywhere;
+}
+
+.rr-matches-note.rr-get {
+  margin: 0 10px 12px;
+  padding: 8px 10px;
+  border-radius: var(--r);
+  background: var(--accent-soft);
+  color: var(--text-1);
+}
+
+.rr-match-group {
+  padding: 0 8px 12px;
+}
+
+.rr-match-feed {
+  padding: 2px 8px 6px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.rr-match-group > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rr-match {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+
+.rr-match.read {
+  color: var(--text-3);
+}
+
+.rr-match-dot {
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.rr-match.read .rr-match-dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line-3);
+}
+
+/* Torrent titles keep the important part at the end, so they wrap instead of being cut. */
+.rr-match-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------ footer */
+.rr-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 4px;
+  color: var(--green);
+  font-size: var(--fs-sm);
+  font-weight: 550;
+  animation: fade-in 160ms var(--ease);
+}
+
+.rr-saved svg {
+  width: 14px;
+  height: 14px;
+}
+
+.rr-delete {
+  color: var(--red);
+}
+
+.rr-delete:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+  color: var(--red);
+}
+
+/* ---------------------------------------------------------- touch screens */
+@media (hover: none) {
+  .rss-row-dl {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------- narrow windows */
+@media (max-width: 1060px) {
+  .rr-layout {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  /* The matches go under the editor, in one scrolling column. */
+  .rr-editor {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .rr-fields,
+  .rr-matches {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .rr-matches {
+    min-height: 160px;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Phones show the list or the article, not both. */
+  .rss-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rss-list {
+    border-right: 0;
+  }
+
+  .rss-body > .rss-reader,
+  .rss-body.reading > .rss-list {
+    display: none;
+  }
+
+  .rss-body.reading > .rss-reader {
+    display: flex;
+  }
+
+  .rss-reader-head .rss-back {
+    display: inline-grid;
+    margin: -4px 0 0 -8px;
+  }
+
+  .rss-reader-scroll {
+    padding: 14px 16px 32px;
+  }
+
+  .rss-reader-titles h2 {
+    font-size: 17px;
+  }
+
+  /* The rules dialog: everything scrolls together under a short rule list. */
+  .modal.rr-dialog {
+    height: calc(100vh - 48px);
+  }
+
+  .rr-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .rr-auto {
+    flex-wrap: wrap;
+    margin: 0 16px 10px;
+  }
+
+  .rr-layout {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    border-bottom: 0;
+  }
+
+  .rr-list {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rr-items {
+    flex: none;
+    max-height: 190px;
+  }
+
+  .rr-editor {
+    overflow: visible;
+  }
+
+  .rr-fields {
+    padding: 14px 16px 20px;
+  }
+
+  .rr-dialog .modal-footer {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 12px 16px 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .rss-toolbar .toolbar-add {
+    width: var(--ctl-h);
+    padding: 0;
+  }
+
+  .rss-add-label {
+    display: none;
+  }
+}

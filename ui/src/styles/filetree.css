@@ -1,0 +1,258 @@
+/* File tree: the Files tab and the add dialog. */
+
+.ft {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  outline: none;
+  contain: content;
+  overscroll-behavior: contain;
+  font-variant-numeric: tabular-nums;
+}
+
+.ft:focus-visible {
+  box-shadow: none;
+}
+
+.ft-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: var(--ft-cols);
+  min-width: var(--ft-min);
+  height: 32px;
+  background: var(--bg-1);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.ft-th {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 10px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color var(--t-fast);
+}
+
+.ft-th:hover {
+  color: var(--text-2);
+}
+
+.ft-th.sorted {
+  color: var(--text-1);
+}
+
+.ft-th.r {
+  justify-content: flex-end;
+}
+
+.ft-th.name {
+  gap: 10px;
+  padding-left: 28px;
+}
+
+.ft-th .sort-ic {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: var(--accent-hi);
+}
+
+.ft-body {
+  position: relative;
+  min-width: var(--ft-min);
+}
+
+.ft-rows {
+  will-change: transform;
+}
+
+.ft-row {
+  display: grid;
+  grid-template-columns: var(--ft-cols);
+  align-items: center;
+  height: var(--ft-row-h);
+  color: var(--text-2);
+}
+
+.ft-row:hover {
+  background: var(--hover);
+}
+
+.ft-row.sel {
+  background: var(--accent-soft);
+  color: var(--text-1);
+}
+
+.ft-row.sel:hover {
+  background: color-mix(in srgb, var(--accent) 19%, transparent);
+}
+
+.ft:focus .ft-row.foc {
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.ft-cell {
+  min-width: 0;
+  padding: 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ft-cell.r {
+  text-align: right;
+}
+
+.ft-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding-right: 8px;
+  color: var(--text-1);
+}
+
+.ft-row.skip .ft-name {
+  color: var(--text-3);
+}
+
+.ft-row.skip .ft-ic {
+  opacity: 0.6;
+}
+
+.ft-chev {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-3);
+}
+
+button.ft-chev:hover {
+  background: var(--press);
+  color: var(--text-1);
+}
+
+.ft-chev svg {
+  width: 13px;
+  height: 13px;
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.ft-chev.open svg {
+  transform: rotate(90deg);
+}
+
+.ft-check {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ft-check .cb {
+  margin: 0;
+}
+
+.ft-ic {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.ft-ic.folder {
+  color: color-mix(in srgb, var(--accent-hi) 70%, var(--text-2));
+}
+
+.ft-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ft-rename {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  margin-left: -3px;
+  padding: 0 6px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-xs);
+  background: var(--bg-input);
+  color: var(--text-1);
+  font-size: var(--fs);
+  box-shadow: var(--focus);
+}
+
+.ft-rename.invalid {
+  border-color: color-mix(in srgb, var(--red) 70%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--red) 30%, transparent);
+}
+
+.ft-prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% + 8px);
+  height: 22px;
+  margin-left: -7px;
+  padding: 0 5px 0 7px;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: inherit;
+  font-size: var(--fs-sm);
+}
+
+.ft-prio:hover {
+  background: var(--press);
+  color: var(--text-1);
+}
+
+.ft-prio > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ft-prio svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.ft-prio.high,
+.ft-prio.max {
+  color: var(--accent-hi);
+}
+
+.ft-prio.max {
+  font-weight: 600;
+}
+
+.ft-prio.skip {
+  color: var(--text-3);
+}
+
+.ft-empty {
+  position: absolute;
+  inset: 32px 0 0 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--text-3);
+  pointer-events: none;
+}
