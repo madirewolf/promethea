@@ -184,7 +184,7 @@ function Header({ cols, total }: HeaderProps) {
       ref={ref}
       className="tt-head"
       style={{ width: total }}
-      onContextMenu={(e) => openContextMenu(e, columnsMenu())}
+      onContextMenu={(e) => openContextMenu(e, columnsMenu)}
     >
       {cols.map((c) => {
         const active = sort.key === c.def.key;

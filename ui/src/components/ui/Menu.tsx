@@ -24,8 +24,11 @@ export interface MenuAction {
 
 export type MenuEntry = MenuAction | { type: "separator" } | { type: "label"; label: string } | false | null | undefined;
 
+/** A function is called again after each keep-open toggle, so check marks follow. */
+export type MenuItems = MenuEntry[] | (() => MenuEntry[]);
+
 interface MenuSpec {
-  items: MenuEntry[];
+  items: MenuItems;
   x: number;
   y: number;
   /** When set, the menu drops down from this rectangle instead of opening at (x, y). */
@@ -36,7 +39,7 @@ interface MenuSpec {
   minWidth?: number;
 }
 
-const useMenuStore = create<{ menu: MenuSpec | null; seq: number }>(() => ({ menu: null, seq: 0 }));
+const useMenuStore = create<{ menu: MenuSpec | null; seq: number; tick: number }>(() => ({ menu: null, seq: 0, tick: 0 }));
 
 export function openMenu(spec: MenuSpec): void {
   const prev = useMenuStore.getState().menu;
@@ -52,14 +55,14 @@ export function closeMenu(): void {
 }
 
 /** Open a context menu at the mouse position. */
-export function openContextMenu(e: ReactMouseEvent | MouseEvent, items: MenuEntry[]): void {
+export function openContextMenu(e: ReactMouseEvent | MouseEvent, items: MenuItems): void {
   e.preventDefault();
   e.stopPropagation();
   openMenu({ items, x: e.clientX, y: e.clientY });
 }
 
 /** Open a dropdown below an element (usually the clicked button). */
-export function openDropdown(el: Element, items: MenuEntry[], opts: { align?: "start" | "end"; matchWidth?: boolean; onClose?: () => void } = {}): void {
+export function openDropdown(el: Element, items: MenuItems, opts: { align?: "start" | "end"; matchWidth?: boolean; onClose?: () => void } = {}): void {
   const r = el.getBoundingClientRect();
   openMenu({
     items,
@@ -132,7 +135,7 @@ export function MenuHost() {
 }
 
 interface PanelProps {
-  items: MenuEntry[];
+  items: MenuItems;
   x: number;
   y: number;
   anchor?: DOMRect;
@@ -145,11 +148,12 @@ interface PanelProps {
 }
 
 function MenuPanel({ items: raw, x, y, anchor, align, minWidth, root, parentRect, onBack }: PanelProps) {
-  const items = clean(raw);
+  useMenuStore((s) => s.tick);
+  const items = clean(typeof raw === "function" ? raw() : raw);
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
   const [active, setActive] = useState(-1);
-  const [sub, setSub] = useState<{ index: number; rect: DOMRect; items: MenuEntry[] } | null>(null);
+  const [sub, setSub] = useState<{ index: number; rect: DOMRect; items: MenuItems } | null>(null);
   const hoverTimer = useRef(0);
 
   useLayoutEffect(() => {
@@ -216,8 +220,7 @@ function MenuPanel({ items: raw, x, y, anchor, align, minWidth, root, parentRect
     }
     const el = ref.current?.querySelector<HTMLElement>(`[data-index="${i}"]`);
     if (!el) return;
-    const subItems = typeof it.items === "function" ? it.items() : it.items;
-    setSub({ index: i, rect: el.getBoundingClientRect(), items: subItems });
+    setSub({ index: i, rect: el.getBoundingClientRect(), items: it.items });
   };
 
   const activate = (i: number) => {
@@ -229,6 +232,7 @@ function MenuPanel({ items: raw, x, y, anchor, align, minWidth, root, parentRect
     }
     if (!it.keepOpen) closeMenu();
     it.onSelect?.();
+    if (it.keepOpen) useMenuStore.setState((s) => ({ tick: s.tick + 1 }));
   };
 
   const onKeyDown = (e: ReactKeyboardEvent) => {

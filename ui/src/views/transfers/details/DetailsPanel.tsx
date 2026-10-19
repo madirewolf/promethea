@@ -6,11 +6,13 @@ import { Activity, Files, Globe, Info, MousePointerClick, Plus, Radio, RefreshCw
 import { api } from "../../../api/client";
 import { IconButton } from "../../../components/ui/Button";
 import { SearchInput } from "../../../components/ui/Form";
+import { openContextMenu } from "../../../components/ui/Menu";
 import { Empty, Tabs } from "../../../components/ui/Misc";
 import type { TabSpec } from "../../../components/ui/Misc";
 import * as A from "../../../lib/actions";
 import { useStore } from "../../../store/store";
 import type { DetailsTab } from "../../../store/store";
+import { tabsMenu } from "../layoutMenu";
 import { FilesTab } from "./FilesTab";
 import { GeneralTab } from "./GeneralTab";
 import { PeersTab, promptAddPeers } from "./PeersTab";
@@ -29,6 +31,7 @@ function useShownId(): string | null {
 
 export function DetailsPanel({ height }: { height: number }) {
   const tab = useStore((s) => s.detailsTab);
+  const shownTabs = useStore((s) => s.layout.tabs);
   const id = useShownId();
   const name = useStore((s) => (id ? s.torrents[id]?.name ?? "" : ""));
   const connected = useStore((s) => {
@@ -48,14 +51,14 @@ export function DetailsPanel({ height }: { height: number }) {
   }
 
   const setTab = (t: DetailsTab) => useStore.setState({ detailsTab: t });
-  const tabs: TabSpec<DetailsTab>[] = [
+  const tabs = ([
     { key: "general", label: "General", icon: <Info /> },
     { key: "files", label: "Files", icon: <Files /> },
     { key: "trackers", label: "Trackers", icon: <Radio /> },
     { key: "peers", label: "Peers", icon: <Users />, badge: connected || undefined },
     { key: "webseeds", label: "HTTP sources", icon: <Globe /> },
     { key: "speed", label: "Speed", icon: <Activity /> },
-  ];
+  ] satisfies TabSpec<DetailsTab>[]).filter((t) => shownTabs.includes(t.key));
 
   let tools: ReactNode = null;
   if (id) {
@@ -111,7 +114,13 @@ export function DetailsPanel({ height }: { height: number }) {
 
   return (
     <section className="details" style={{ height }} aria-label="Torrent details">
-      <Tabs tabs={tabs} value={tab} onChange={setTab} className="details-tabs">
+      <Tabs
+        tabs={tabs}
+        value={tab}
+        onChange={setTab}
+        className="details-tabs"
+        onContextMenu={(e, at) => openContextMenu(e, () => tabsMenu(at))}
+      >
         {tools}
         {id && tab !== "speed" && (
           <span className="details-name" data-tip={name}>

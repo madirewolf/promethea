@@ -5,6 +5,9 @@ set. Named after Prometheus, who took fire from the gods and gave it to everyone
 
 ![Promethea](docs/screenshot.png)
 
+- Simple by default: the sidebar shows what's running and what's stopped, and the details panel
+  shows General and Files. Switch to Detailed in Settings, or right-click a sidebar heading or a
+  details tab to choose exactly which filters, sections and tabs show
 - Categories, tags, and filters by status and tracker
 - Speed limits, plus an alternative-speed mode on a schedule
 - Search through plugins: the ones made for qBittorrent work as they are

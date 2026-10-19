@@ -4,8 +4,10 @@ import { Check, Laptop, Moon, SlidersHorizontal, Sun } from "lucide-react";
 import { api } from "../../../api/client";
 import { Button } from "../../../components/ui/Button";
 import { Segmented } from "../../../components/ui/Form";
+import { LAYOUTS, layoutName } from "../../../lib/layout";
+import type { LayoutName } from "../../../lib/layout";
 import { ACCENTS } from "../../../lib/look";
-import { toast, toastError, useStore } from "../../../store/store";
+import { setLayout, toast, toastError, useStore } from "../../../store/store";
 import { Group, Row, Section, SwitchPref, SwitchRow } from "../controls";
 import { usePref } from "../draft";
 
@@ -66,6 +68,31 @@ function DensityRow() {
         options={[
           { value: "comfortable", label: "Comfortable" },
           { value: "compact", label: "Compact" },
+        ]}
+      />
+    </Row>
+  );
+}
+
+/** Kept with the window's other layout (per device) and applied right away, not saved with the rest. */
+function LayoutRow() {
+  const name = useStore((s) => layoutName(s.layout));
+  return (
+    <Row
+      label="Layout"
+      hint={
+        name
+          ? "Simple keeps the sidebar and the details panel to the essentials. To pick exactly what shows, right-click a sidebar heading or a details tab."
+          : "You've picked what shows yourself. Choose one to start again from it."
+      }
+      keywords="appearance simple detailed minimal sidebar status filters details tabs"
+    >
+      <Segmented<LayoutName | "custom">
+        value={name ?? "custom"}
+        onChange={(v) => v !== "custom" && setLayout(LAYOUTS[v])}
+        options={[
+          { value: "simple", label: "Simple" },
+          { value: "detailed", label: "Detailed" },
         ]}
       />
     </Row>
@@ -139,6 +166,7 @@ export function GeneralSection() {
         <ThemeRow />
         <AccentRow />
         <DensityRow />
+        <LayoutRow />
       </Group>
 
       <Group title="Transfer list">

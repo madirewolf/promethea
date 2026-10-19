@@ -126,8 +126,10 @@ function PieceBars({ id, numPiecesHint }: { id: string; numPiecesHint: number })
 }
 
 // ------------------------------------------------------------------ helpers
-function Item({ label, children, hide }: { label: string; children: ReactNode; hide?: boolean }) {
-  if (hide) return null;
+/** `more`: only with "Every detail in General" on (the Detailed layout). */
+function Item({ label, children, hide, more }: { label: string; children: ReactNode; hide?: boolean; more?: boolean }) {
+  const everyDetail = useStore((s) => s.layout.everyDetail);
+  if (hide || (more && !everyDetail)) return null;
   return (
     <>
       <dt>{label}</dt>
@@ -174,6 +176,7 @@ function Hash({ value, what }: { value: string; what: string }) {
 export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
   const t = useStore((s) => s.torrents[id]);
   const desktop = useStore((s) => !!s.app?.desktop);
+  const everyDetail = useStore((s) => s.layout.everyDetail);
   const ms = useRefreshMs();
   const { data: p, error } = useTorrentPoll<Properties>(id, api.properties, ms, nonce);
 
@@ -197,11 +200,13 @@ export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
           <PieceBars id={id} numPiecesHint={p.hasMetadata ? p.numPieces : 0} />
           <span className="gp-value num">{formatPercent(progress)}</span>
         </div>
-        <div className="gp-row sub">
-          <span className="gp-label">Availability</span>
-          <span className="gp-fill" />
-          <span className="gp-value num">{p.availability < 0 ? "–" : p.availability.toFixed(2)}</span>
-        </div>
+        {everyDetail && (
+          <div className="gp-row sub">
+            <span className="gp-label">Availability</span>
+            <span className="gp-fill" />
+            <span className="gp-value num">{p.availability < 0 ? "–" : p.availability.toFixed(2)}</span>
+          </div>
+        )}
       </div>
 
       <div className="general-grid">
@@ -222,16 +227,16 @@ export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
               <Faint>({formatBytes(p.upSession)} this session)</Faint>
             </Item>
             <Item label="Share ratio">{formatRatio(p.ratio)}</Item>
-            <Item label="Wasted">{formatBytes(p.wasted)}</Item>
-            <Item label="Reannounce in">{stopped || p.reannounceIn <= 0 ? "–" : formatDuration(p.reannounceIn)}</Item>
-            <Item label="Last seen complete">{p.lastSeenComplete > 0 ? formatDate(p.lastSeenComplete) : "Never"}</Item>
+            <Item more label="Wasted">{formatBytes(p.wasted)}</Item>
+            <Item more label="Reannounce in">{stopped || p.reannounceIn <= 0 ? "–" : formatDuration(p.reannounceIn)}</Item>
+            <Item more label="Last seen complete">{p.lastSeenComplete > 0 ? formatDate(p.lastSeenComplete) : "Never"}</Item>
           </dl>
         </section>
 
         <section>
           <div className="section-title">Connections</div>
           <dl className="kv">
-            <Item label="Connections">
+            <Item more label="Connections">
               {count(p.connections)}
               {p.connectionsLimit > 0 && <Faint>({p.connectionsLimit.toLocaleString()} max)</Faint>}
             </Item>
@@ -251,8 +256,8 @@ export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
               {formatSpeed(p.upSpeed, "0 B/s")}
               <Faint>({formatSpeed(p.upSpeedAvg, "0 B/s")} average)</Faint>
             </Item>
-            <Item label="Download limit">{formatLimit(p.dlLimit)}</Item>
-            <Item label="Upload limit">{formatLimit(p.upLimit)}</Item>
+            <Item more label="Download limit">{formatLimit(p.dlLimit)}</Item>
+            <Item more label="Upload limit">{formatLimit(p.upLimit)}</Item>
           </dl>
         </section>
 
@@ -263,7 +268,7 @@ export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
               {p.hasMetadata ? formatBytes(p.totalSize) : "–"}
               {p.hasMetadata && p.size < p.totalSize && <Faint>({formatBytes(p.size)} selected)</Faint>}
             </Item>
-            <Item label="Pieces">
+            <Item more label="Pieces">
               {p.hasMetadata ? (
                 <>
                   {p.numPieces.toLocaleString()} × {formatBytes(p.pieceSize)}
@@ -273,19 +278,19 @@ export function GeneralTab({ id, nonce }: { id: string; nonce: number }) {
                 "–"
               )}
             </Item>
-            <Item label="Created by" hide={!p.createdBy}>
+            <Item more label="Created by" hide={!p.createdBy}>
               <span className="selectable">{p.createdBy}</span>
             </Item>
-            <Item label="Created on" hide={!p.creationDate}>
+            <Item more label="Created on" hide={!p.creationDate}>
               {formatDate(p.creationDate)}
             </Item>
             <Item label="Added on">{formatDate(p.addedOn)}</Item>
             <Item label="Completed on">{p.completedOn > 0 ? formatDate(p.completedOn) : "–"}</Item>
-            <Item label="Private">{p.hasMetadata ? (p.private ? "Yes" : "No") : "–"}</Item>
-            <Item label="Info hash v1" hide={!p.infohashV1 && !!p.infohashV2}>
+            <Item more label="Private">{p.hasMetadata ? (p.private ? "Yes" : "No") : "–"}</Item>
+            <Item more label="Info hash v1" hide={!p.infohashV1 && !!p.infohashV2}>
               <Hash value={p.infohashV1} what="Info hash" />
             </Item>
-            <Item label="Info hash v2" hide={!p.infohashV2}>
+            <Item more label="Info hash v2" hide={!p.infohashV2}>
               <Hash value={p.infohashV2} what="Info hash v2" />
             </Item>
             <Item label="Save path">

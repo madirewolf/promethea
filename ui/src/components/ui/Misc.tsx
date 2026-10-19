@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { FolderOpen, LoaderCircle } from "lucide-react";
 import { api } from "../../api/client";
 import { useStore } from "../../store/store";
@@ -60,6 +60,7 @@ export function Tabs<T extends string>({
   onChange,
   className,
   children,
+  onContextMenu,
 }: {
   tabs: TabSpec<T>[];
   value: T;
@@ -67,14 +68,28 @@ export function Tabs<T extends string>({
   className?: string;
   /** Extra content at the right end of the tab strip. */
   children?: ReactNode;
+  /** Right-click on the strip; `tab` is the tab under the mouse, if any. */
+  onContextMenu?: (e: ReactMouseEvent, tab?: T) => void;
 }) {
   return (
-    <div className={["tabs", className].filter(Boolean).join(" ")} role="tablist">
+    <div
+      className={["tabs", className].filter(Boolean).join(" ")}
+      role="tablist"
+      onContextMenu={
+        onContextMenu &&
+        ((e) => {
+          if ((e.target as Element).closest(".tabs-extra")) return;
+          const key = (e.target as Element).closest<HTMLElement>("[data-tab]")?.dataset.tab as T | undefined;
+          onContextMenu(e, key);
+        })
+      }
+    >
       {tabs.map((t) => (
         <button
           key={t.key}
           type="button"
           role="tab"
+          data-tab={t.key}
           aria-selected={value === t.key}
           className={["tab", value === t.key && "on"].filter(Boolean).join(" ")}
           onClick={() => onChange(t.key)}

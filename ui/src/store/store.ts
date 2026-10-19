@@ -11,7 +11,11 @@ import type {
   Torrent,
 } from "../api/types";
 import { emit } from "../lib/events";
+import { LAYOUTS, readLayout } from "../lib/layout";
+import type { DetailsTab, Layout } from "../lib/layout";
 import type { StatusFilter } from "../lib/states";
+
+export type { DetailsTab } from "../lib/layout";
 
 export type View = "transfers" | "search" | "rss" | "settings" | "log";
 
@@ -37,8 +41,6 @@ export interface ColumnState {
   widths: Record<string, number>;
 }
 
-export type DetailsTab = "general" | "files" | "trackers" | "peers" | "webseeds" | "speed";
-
 export interface UiState {
   view: View;
   filter: Filter;
@@ -49,6 +51,7 @@ export interface UiState {
   detailsHeight: number;
   sidebarWidth: number;
   collapsed: Record<string, boolean>;
+  layout: Layout;
 }
 
 export interface DialogSpec {
@@ -116,17 +119,34 @@ const defaultUi: UiState = {
   detailsHeight: 300,
   sidebarWidth: 232,
   collapsed: {},
+  layout: LAYOUTS.simple,
 };
+
+/** A filter on something the layout hides would narrow the list with nothing on screen saying so.
+ * (Errored is the exception: it shows itself whenever it's picked or something has failed.) */
+function fitFilter(f: Filter, l: Layout): Filter {
+  return {
+    ...f,
+    status: f.status === "all" || f.status === "errored" || l.status.includes(f.status) ? f.status : "all",
+    category: l.sections.includes("categories") ? f.category : null,
+    tag: l.sections.includes("tags") ? f.tag : null,
+    tracker: l.sections.includes("trackers") ? f.tracker : null,
+  };
+}
 
 function loadUi(): UiState {
   try {
     const raw = localStorage.getItem(UI_KEY);
     if (!raw) return defaultUi;
     const saved = JSON.parse(raw) as Partial<UiState>;
+    const layout = readLayout(saved.layout);
+    const tab = saved.detailsTab ?? defaultUi.detailsTab;
     return {
       ...defaultUi,
       ...saved,
-      filter: { ...defaultUi.filter, ...(saved.filter ?? {}), text: "" },
+      layout,
+      filter: fitFilter({ ...defaultUi.filter, ...(saved.filter ?? {}), text: "" }, layout),
+      detailsTab: layout.tabs.includes(tab) ? tab : layout.tabs[0],
       view: saved.view === "settings" ? "transfers" : saved.view ?? "transfers",
     };
   } catch {
@@ -168,17 +188,18 @@ useStore.subscribe((s, prev) => {
     s.detailsTab === prev.detailsTab &&
     s.detailsHeight === prev.detailsHeight &&
     s.sidebarWidth === prev.sidebarWidth &&
-    s.collapsed === prev.collapsed
+    s.collapsed === prev.collapsed &&
+    s.layout === prev.layout
   )
     return;
   window.clearTimeout(saveTimer);
   saveTimer = window.setTimeout(() => {
-    const { view, filter, sort, columns, detailsOpen, detailsTab, detailsHeight, sidebarWidth, collapsed } =
+    const { view, filter, sort, columns, detailsOpen, detailsTab, detailsHeight, sidebarWidth, collapsed, layout } =
       useStore.getState();
     try {
       localStorage.setItem(
         UI_KEY,
-        JSON.stringify({ view, filter, sort, columns, detailsOpen, detailsTab, detailsHeight, sidebarWidth, collapsed }),
+        JSON.stringify({ view, filter, sort, columns, detailsOpen, detailsTab, detailsHeight, sidebarWidth, collapsed, layout }),
       );
     } catch {
       /* storage unavailable (private mode): layout just isn't remembered */
@@ -318,6 +339,19 @@ export function setSort(key: string): void {
 
 export function toggleCollapsed(section: string): void {
   set((s) => ({ collapsed: { ...s.collapsed, [section]: !s.collapsed[section] } }));
+}
+
+export function setLayout(patch: Partial<Layout>): void {
+  set((s) => {
+    const layout = { ...s.layout, ...patch };
+    if (!layout.tabs.length) return {};
+    // Hiding what's in use: go back to all torrents, or to the first tab left.
+    const tab = layout.tabs.includes(s.detailsTab) ? s.detailsTab : layout.tabs[0];
+    // A section that comes back should open, not stay folded away.
+    const collapsed = { ...s.collapsed };
+    for (const k of layout.sections) if (!s.layout.sections.includes(k)) delete collapsed[k];
+    return { layout, filter: fitFilter(s.filter, layout), detailsTab: tab, collapsed };
+  });
 }
 
 // ------------------------------------------------------------------ dialogs

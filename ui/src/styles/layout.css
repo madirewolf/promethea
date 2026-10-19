@@ -309,7 +309,7 @@ body.dragging iframe {
   }
 }
 
-.side-more {
+.side-add {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -321,11 +321,11 @@ body.dragging iframe {
   font-size: var(--fs-sm);
 }
 
-.side-more:hover {
+.side-add:hover {
   color: var(--text-1);
 }
 
-.side-more svg {
+.side-add svg {
   width: 13px;
   height: 13px;
 }

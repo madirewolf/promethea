@@ -102,19 +102,19 @@ export type StatusFilter =
   | "moving"
   | "errored";
 
-export const STATUS_FILTERS: { key: StatusFilter; label: string; primary: boolean }[] = [
-  { key: "all", label: "All", primary: true },
-  { key: "downloading", label: "Downloading", primary: true },
-  { key: "seeding", label: "Seeding", primary: true },
-  { key: "completed", label: "Completed", primary: true },
-  { key: "stopped", label: "Stopped", primary: true },
-  { key: "active", label: "Active", primary: true },
-  { key: "errored", label: "Errored", primary: true },
-  { key: "running", label: "Running", primary: false },
-  { key: "inactive", label: "Inactive", primary: false },
-  { key: "stalled", label: "Stalled", primary: false },
-  { key: "checking", label: "Checking", primary: false },
-  { key: "moving", label: "Moving", primary: false },
+export const STATUS_FILTERS: { key: StatusFilter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "downloading", label: "Downloading" },
+  { key: "seeding", label: "Seeding" },
+  { key: "completed", label: "Completed" },
+  { key: "running", label: "Running" },
+  { key: "stopped", label: "Stopped" },
+  { key: "active", label: "Active" },
+  { key: "inactive", label: "Inactive" },
+  { key: "stalled", label: "Stalled" },
+  { key: "checking", label: "Checking" },
+  { key: "moving", label: "Moving" },
+  { key: "errored", label: "Errored" },
 ];
 
 export function matchesStatus(t: Torrent, f: StatusFilter): boolean {
