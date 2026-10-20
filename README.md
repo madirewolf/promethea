@@ -15,7 +15,9 @@ set. Named after Prometheus, who took fire from the gods and gave it to everyone
 - A torrent creator
 - Sequential download, file priorities, peer and tracker details, an IP filter
 - A web UI to use it from your phone or another computer
-- Light and dark themes; it sits in the tray when you close the window
+- Light and dark themes, and it can keep running in the tray when you close the window
+
+![Switching from the Simple layout to Detailed and back while torrents download](docs/demo.gif)
 
 ## Install
 
